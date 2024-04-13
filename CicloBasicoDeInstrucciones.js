@@ -47,6 +47,36 @@ class CicloBasicoInstrucciones{
         })
     }
 
+    //Realiza casi todo el proceso del procesador
+    Procesador(typeInstructions, memory){
+        this.pc = memory;
+        
+        //le pasamos la instruccion a MAR
+        this.mar = this.pc; //El MAR que deberia hacer es buscar el tipo de instrccion que es
+        
+        //pasamos el tipo de instrccion al MDR 
+        this.mdr = typeInstructions + this.mar;
+        //pasamos el valor al ICR Y despues a la unidad de control
+        this.icr = this.mdr;
+        this.unidadControl = this.icr;
+
+        //le pasamos el espacio de memoria de la instruccio al MAR 
+        this.mar = memory;
+        if(typeInstructions == "STORE"){
+            this.mdr = this.acumulador;
+
+            this.memoria.forEach(element => {
+                if(this.mar in element){
+                    element[this.mar] = this.mdr;
+                }
+            });
+        }else{
+
+        }
+        //ahora buscamos en la memoria el valor que esta en el mar y lo guardamos en el MDR
+        this.mdr = this.memoria.map(objeto => objeto[this.mar]).find(valor => valor !== undefined);
+    }
+
     SET(memory,value) {
 
         const existe = this.memoria.some(item => Object.keys(item)[0] === memory);
@@ -59,28 +89,28 @@ class CicloBasicoInstrucciones{
     }
 
     LDR(memory) {
-        this.pc = memory;
-        
-        //le pasamos la instruccion a MAR
-        this.mar = this.pc; //El MAR que deberia hacer es buscar el tipo de instrccion que es
-        
-        //pasamos el tipo de instrccion al MDR 
-        this.mdr = "LOAD " + this.mar;
-        //pasamos el valor al ICR Y despues a la unidad de control
-        this.icr = this.mdr;
-        this.unidadControl = this.icr;
-
-        //le pasamos el espacio de memoria de la instruccio al MAR 
-        this.mar = memory;
-        //ahora buscamos en la memoria el valor que esta en el mar y lo guardamos en el MDR
-        this.mdr = this.memoria.map(objeto => objeto[this.mar]).find(valor => valor !== undefined);
-
+        this.Procesador("LOAD",memory)
         //por ultimo se lo pasamos al acumulador 
-        this.acumulador = this.mdr;     
+        this.acumulador = this.mdr; 
+        console.log("Este es el acumulador "+this.acumulador);    
     }
 
-    ADD() {
-        console.log("Add ejecutado");
+    ADD(memoryOne,memoryTwo, memoryTree ) {
+        if(memoryTwo == "NULL" && memoryTree =="NULL"){
+
+            this.Procesador("ADD",memoryOne)
+            this.alu = this.acumulador;
+            this.acumulador = this.mdr;
+
+            this.acumulador =  parseInt(this.alu) + parseInt(this.acumulador);
+            
+            console.log("Este es el acumulador "+this.acumulador);
+        }else if(memoryTree =="NULL"){
+
+
+        }else{
+
+        }
     }
 
     INC() {
@@ -91,8 +121,9 @@ class CicloBasicoInstrucciones{
         console.log("Dec ejecutado");
     }
 
-    STR() {
-        console.log("Str ejecutado");
+    STR(memory) {
+
+        this.Procesador("STORE",memory);
     }
 
     SHW() {
